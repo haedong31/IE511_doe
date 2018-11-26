@@ -1,0 +1,43 @@
+---
+title: "IE 511 Term Project Proposal (Revised)"
+author: "Haedong Kim"
+date: "11/13/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(kableExtra)
+library(readxl)
+library(tidyverse)
+```
+
+## Goals of the experiment
+
+The goals of this experiment are to find significant factors having effects on the taste of pasta noodles and optimize the process of boiling them. Pasta is my go-to food when I do not have a specific preference because it does not require much time and effort to cook it. Since I fell in love with pasta, I have searched on the Internet or asked friends that how to cook it better. However, there have been so many tips for making delicious pasta noodles that cause information overload making me confused and the process complicated.
+
+Since the reason I like pasta is its easiness and quickness, I want to make the process of cooking it as simple as possible. Therefore, the main purpose of this experiment is to find the simple but excellent way to cook pasta noodles. Besides, after finding the significant factors, I want to discover an optimal combination of the factors resulting in a great pasta by analyzing response vs. factor plots or fitting response surfaces. In summary, the goals of this experiment are:
+
+1. To find significant factors effecting on the quality of pasta noodles to streamline the cooking process
+
+2. To find an optimial recipe of boiling pasta noodles using visualization tools or response surfaces
+
+## Experimental units and factors
+
+* Experimental units
+    - Raw pasta noodles
+* Responses
+    - Average of the rank measured by four testers
+    - Variance of the rank measured by four testers
+* Controllable factors of interest
+```{r}
+read_excel("factors.xlsx", sheet = "factors") %>% replace(is.na(.), "-") %>%
+  kable("latex", booktabs = TRUE, escape = FALSE) %>%
+  kable_styling(position = "center")
+```
+* Nuisance factor to be blocked
+    - Effects of different stoves
+
+The quality of the noodles will be measured by four testers using the 0-10 scale, and the combinations of factos apply to the experimental units randomly. Once noodles go under the process, cooking in a boiling pot, they are separated from the environment and do not require operations. Hence, I assume there are no expected environmental nuisance factors such as room temperature, or time; and an operator nuisance factor. 
+
+In my kitchen, there are four stoves. To run experiments simultaneously, I plan to use two of them. Although they are parts of the same equipment and have the same temperature-control interface, there may be stove-to-stove differences. To block this effect, each stove forms a block. Since hiring the testers is expensive, the experiment is planned as an unreplicated design to reduce the total number of runs.
