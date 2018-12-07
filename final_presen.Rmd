@@ -44,7 +44,8 @@ read_excel("tables.xlsx", sheet = "factors") %>%
   kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
-- I chose ingredients that I can find esaily in the nearest grocery store from my home (Giant)
+- Experimental units are pasta noodles and response is the mean of three testers' rates
+    - Variance of rates is discarded as most of them are $1/3$
 - Brands of ingredients: Giant Extra Virgin Olive Oil and Kitchen Basics Original Chicken Stock
 - I put pasta noodles after water starting to boil and cook it for 5 minuates
 - I used the same amount of water (3 cups by my tumbler), while it probably not exactly the same for each time, but I assume this variation is not significant
@@ -59,10 +60,8 @@ read_excel("tables.xlsx", sheet = "table2") %>%
   collapse_rows(columns = 1, latex_hline = "major")
 ```
 - $2^{6-2}_{IV}$: resolution $IV$ fractional factorial design
-- Stove-to-stove is a nuisance factor, so it is blocked by using two different stoves as blocks
-- The standard order in the second column of the table is the Yates' standard order
-- The runing order was obtained by randomly matching each treatment combination and pasta noodles (experimental units) 
-- Generators are $E=ABC$ and $F=BCD$, and $ABD$ is confounded with the blocks
+- Stove-to-stove is blocked and confounded with $ABD$
+- Generators are $E=ABC$ and $F=BCD$
 
 ## Alias Structure
 
@@ -86,32 +85,48 @@ $ABD$ is confounded with the blocks and aliased with $ABD=CDE=ACF=BEF$
 ## Daniel's Plot
 
 ```{r}
-DanielPlot(plan_mean, code = TRUE, half = TRUE, alpha = 0.1)
+DanielPlot(plan_mean, half = TRUE, alpha = 0.25, 
+           main = "Half Normal Plot for the Mean of Rates")
 ```
+
+The Daniel's plot shows that $D$, $E$, and $ABD$ (block) are significant. Hence, the other factors could be screend out.
 
 ## ANOVA
 
-```{r}
-my_anova <- lm(plan_mean)
-summary(my_anova)
+If we run ANOVA only for $D$, $E$, and $ABD$:
+```{r, size="tiny"}
+my_anova <- lm(plan_mean, formula = "res_mean ~ ABD + (D + E)^3")
+print(summary(my_anova)[4], digits = 5)
 ```
+Therefore, among the three effects, only $E$ is statistically significant. The Daniel's plot also implies the same result since only $E$ is significantly deviates from the normal plot. 
 
 ## Main Effect Plots
 
-```{r}
-MEPlot(plan_mean)
+```{r, fig.width=6, fig.height=3.5}
+MEPlot(plan_mean, main = "Main Effects Plot")
 ```
+
+By investigating the main effect plot, we can confirm that $D$, $E$, and $ABD$ have larger impact than other effects. In contrast to my first conjecture, adding olive oil ($A$) and chicken stock $B$ decrease the mean rate.  
 
 ## Interaction Plots
 
-```{r}
+```{r, fig.width=10}
 IAPlot(plan_mean, abbrev = 5, show.alias = TRUE, lwd = 2, 
-       cex = 2, cex.xax = 1.2, cex.lab = 1.5)
+       cex = 2, cex.xax = 1.2, cex.lab = 1.5, main = "Interaction Plot Matrix")
 ```
+
+Two factors interaction plots imply that most of factors are independent because they are almost parallel.
 
 ## Conclusion
 
-- Important effects are
+My guess before the experiment was that olive oil and chicken stock may have significant effect on the rates, and they may have interaction between washing noodles after cooking because that might wash out the oil and the flavor of broth. *However, it turns out that stove temperature and amount of salt are more important than them, and I find out the pasta noodle brand that fits to the tast of Koreans (all testers were Koreans)*. 
+
+**Suggested recipe**
+
+- Buy Dreamfields Angel Hair noodles
+- Cooking noodles with the highest stove temperature
+- Add 5g of salt (I know how much it is approximately without scalers)
+- *Do not bother to add olive oil and chicken stock!!*
 
 ## Picture of me and cooked noodles
 
