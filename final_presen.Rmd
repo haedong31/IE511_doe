@@ -1,43 +1,122 @@
 ---
-title: "IE 511 Term Project"
-subtitle: "Simply Cook"
+title: "IE 511 DOE Term Project"
+subtitle: "Cook Pasta Simply"
 author: "Haedong Kim"
 date: "12/6/2018"
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
 output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(FrF2)
+library(kableExtra)
+library(readxl)
+library(tidyverse)
+source("analysis.R")
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+**Motivation of the experiment**
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+Pasta is my go-to food when I do not have a specific preference because it does not require much time and effort to cook it. Since I fell in love with pasta, I have searched on the Internet or asked friends that how to cook it better. However, there have been so many tips for making delicious pasta noodles that cause information overload making me confused and the process complicated. *Now I want to discard some tips that would not have big effects.*
 
-## Slide with Bullets
+**Objective of the experiment**
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- To find factors having significant effects on the quality of pasta noodles to simplify the cooking process
+- To find a simple recipe of cooking pasta noodles without compromising quality
 
-## Slide with R Output
+## Factors to Be Inspected
 
-```{r cars, echo = TRUE}
-summary(cars)
+```{r}
+read_excel("tables.xlsx", sheet = "factors") %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+- I chose ingredients that I can find esaily in the nearest grocery store from my home (Giant)
+- Brands of ingredients: Giant Extra Virgin Olive Oil and Kitchen Basics Original Chicken Stock
+- I put pasta noodles after water starting to boil and cook it for 5 minuates
+- I used the same amount of water (3 cups by my tumbler), while it probably not exactly the same for each time, but I assume this variation is not significant
+- I used `R` for the analysis
+
+## Design of the Experiment
+
+```{r}
+read_excel("tables.xlsx", sheet = "table2") %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down") %>%
+  collapse_rows(columns = 1, latex_hline = "major")
+```
+- $2^{6-2}_{IV}$: resolution $IV$ fractional factorial design
+- Stove-to-stove is a nuisance factor, so it is blocked by using two different stoves as blocks
+- The standard order in the second column of the table is the Yates' standard order
+- The runing order was obtained by randomly matching each treatment combination and pasta noodles (experimental units) 
+- Generators are $E=ABC$ and $F=BCD$, and $ABD$ is confounded with the blocks
+
+## Alias Structure
+
+**Complete Defining Relation:**    
+$$\begin{aligned}
+I=ABCE=BCDF=ADEF
+\end{aligned}$$
+**Alias Chains:**    
+$$\begin{aligned}
+&A=BCE=DEF\ &AB=CE \\
+&B=ACE=CDF\ &AC=BE \\
+&C=ABE=BDF\ &AD=EF \\
+&D=BCF=AEF &AE=BC=DF \\
+&E=ABC=ADF &AF=DE \\
+&F=BCD=ADE &BD=CF \\
+&ABD=CDE=ACF=BEF &BF=CD \\
+&ACD=BDE=ABF=CEF
+\end{aligned}$$
+$ABD$ is confounded with the blocks and aliased with $ABD=CDE=ACF=BEF$
+
+## Daniel's Plot
+
+```{r}
+DanielPlot(plan_mean, code = TRUE, half = TRUE, alpha = 0.1)
 ```
 
-## Slide with Plot
+## ANOVA
 
-```{r pressure}
-plot(pressure)
+```{r}
+my_anova <- lm(plan_mean)
+summary(my_anova)
 ```
 
-## Picture of me cooking pasta noodles
+## Main Effect Plots
 
-!["preparing"](./sample_image.png)
+```{r}
+MEPlot(plan_mean)
+```
 
-## Picture of me cooking pasta noodles
+## Interaction Plots
 
-!["cooking"](./sample_image.png)
+```{r}
+IAPlot(plan_mean, abbrev = 5, show.alias = TRUE, lwd = 2, 
+       cex = 2, cex.xax = 1.2, cex.lab = 1.5)
+```
+
+## Conclusion
+
+- Important effects are
+
+## Picture of me and cooked noodles
+
+![](./images/IMG_1005.png) ![](./images/IMG_1004.png)
+
+## Picture of ingredients
+
+![](./images/IMG_0988.png)
